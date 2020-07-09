@@ -1,26 +1,68 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import Axios from 'axios';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [quote, setQuote] = useState('');
+  const [inputQuote, setInputQuote] = useState('');
+  const [favQuote, setFavQuote] = useState([]);
+  const [myQuote, setMyQuote] = useState([]);
+
+  const getKanyeQuote = () => {
+    Axios.get('https://api.kanye.rest/').then((result) => {
+      setQuote(result.data.quote);
+    });
+  };
+
+  const mySelfQuote = () => {
+    setMyQuote((myQuote) => [...myQuote, inputQuote]);
+  };
+
+  const getFavQuote = () => {
+    setFavQuote((favQuote) => [...favQuote, quote]);
+  };
+
+  useEffect(() => {
+    getKanyeQuote();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <p>Kanye West Quote!</p>
+        <p>{quote}</p>
+        <button onClick={() => getKanyeQuote()}>Get Quote</button>
+        <button onClick={() => getFavQuote()}>Add to Favorite!</button>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          {' '}
+          {favQuote.map((quote, i) => (
+            <h5>
+              {i + 1}.{quote}
+            </h5>
+          ))}
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <div>
+          <input
+            name="inputQuote"
+            onChange={(e) => {
+              setInputQuote(e.target.value);
+            }}
+            type="text"
+          />
+          <button onClick={() => mySelfQuote()}>submit</button>
+          <p>
+            {' '}
+            {myQuote.map((quote, i) => (
+              <h5>
+                {i + 1}.{quote}
+              </h5>
+            ))}
+          </p>
+        </div>
       </header>
     </div>
   );
-}
+};
 
 export default App;
